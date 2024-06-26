@@ -11,76 +11,104 @@ function getComputerChoice () {
     }
 }
 
-function getHumanChoice () {
-    let choice = prompt("Rock, Paper, or Scissors?")
-
-    return choice
-}
-
 function playRound (humanChoice, computerChoice) {
-    let humRestofChoice = (humanChoice.toLowerCase()).slice(1, humanChoice.length);
-    let humFirstchar = humanChoice[0].toUpperCase();
-    let humFinalChoice = `${humFirstchar}${humRestofChoice}`;
-
-    console.log(humFinalChoice)
+    let humFinalChoice = humanChoice;
 
     let loserText = `Damn, you lost! ${computerChoice} beats ${humFinalChoice}`
-    let winnerText = `Nice, you won! ${computerChoice} beats ${humFinalChoice}`
+    let winnerText = `Nice, you won! ${humFinalChoice} beats ${computerChoice}`
     let tieText = `Wow, you both tied with ${humFinalChoice}`
     
     if (humFinalChoice == computerChoice) {
         console.log(tieText)
-        return null
+        return tieText;
     } else if ((humFinalChoice == 'Rock') && (computerChoice == 'Paper')) {
         console.log(loserText)
-        return false
+        computerScore += 1;
+        return loserText;
         
     } else if ((humFinalChoice == 'Rock') && (computerChoice == 'Scissors')) {
         console.log(winnerText)
-        return true
+        humanScore += 1;
+        return winnerText;
 
     } else if ((humFinalChoice == 'Paper') && (computerChoice == 'Scissors')) {
         console.log(loserText)
-        return false
+        computerScore += 1;
+        return loserText;
 
     } else if ((humFinalChoice == 'Paper') && (computerChoice == 'Rock')) {
         console.log(winnerText)
-        return true
+        humanScore += 1;
+        return winnerText
 
     } else if ((humFinalChoice == 'Scissors') && (computerChoice == 'Paper')) {
         console.log(winnerText)
-        return true
+        humanScore += 1;
+        return winnerText;
 
     } else if ((humFinalChoice == 'Scissors') && (computerChoice == 'Rock')) {
         console.log(loserText)
-        return false
+        computerScore += 1;
+        return loserText;
     }
 }
 
+const buttonContainer = document.querySelector("div.button-container")
 
+buttonContainer.addEventListener("mouseover", (event) => {
+    let button = event.target;
 
-function playGame () {
-    let humanScore = 0;
-    let computerScore = 0;
+    if (button.nodeName == 'BUTTON') {
+        button.classList.toggle("hover");
+    }
+});
 
-    for (let i = 0; i < 5; i++) {
-        let currentResult = playRound(getHumanChoice(), getComputerChoice())
+buttonContainer.addEventListener("mouseout", (event) => {
+    let button = event.target;
 
-        if (currentResult === true) {
-            humanScore += 1;
-        } else if (currentResult === false) {
-            computerScore += 1;
-        } else {
-
+    if (button.nodeName == 'BUTTON') {
+        button.classList.toggle("hover");
+        if (button.classList.contains("pressed")) {
+            button.classList.remove("pressed");
         }
     }
+});
 
-    if (humanScore > computerScore) {
-        console.log(`Wow you won! ${humanScore} : ${computerScore}`)
-    } else if (humanScore < computerScore) {
-        console.log(`Damn... ${humanScore} : ${computerScore}`)
+buttonContainer.addEventListener("mousedown", (event) => {
+    let button = event.target;
+    if (button.nodeName == 'BUTTON') {
+        button.classList.add("pressed");
+    }
+});
+
+buttonContainer.addEventListener("mouseup", (event) => {
+    let button = event.target
+    if (button.nodeName == 'BUTTON') {
+        button.classList.remove("pressed");
+    }
+});
+
+let humanScore = 0;
+let computerScore = 0;
+let scoreText = document.querySelector(".score-text");
+let resultText = document.querySelector(".result")
+
+buttonContainer.addEventListener("click", (event) => {
+    let button = event.target;
+    let result;
+    if (button.nodeName != 'BUTTON') return false;
+    switch (button.className) {
+        case 'Rock hover':
+            result = playRound('Rock', getComputerChoice())
+            break
+        case 'Paper hover':
+            result = playRound('Paper', getComputerChoice())
+            break
+        case 'Scissors hover':
+            result = playRound('Scissors', getComputerChoice())
+            break
     }
 
-}
-
-playGame()
+    scoreText.textContent = `Player ${humanScore} : ${computerScore} AI`
+    resultText.textContent = result;
+});
